@@ -11,14 +11,22 @@ const productSchema = new mongoose.Schema({
     },
     tags: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "tags",
-            required: true
+            type: String,
+            required: true,
         }
     ],
     feature: {
         type: Boolean,
         default: false,
+    },
+    gallery: [
+        {
+            type: String,
+        }
+    ],
+    countStocks: {
+        type: Number,
+        default: 100,
     },
     image: {
         type: String,

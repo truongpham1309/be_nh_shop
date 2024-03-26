@@ -1,5 +1,4 @@
-import products from "../../models/products/products";
-import { productValidations } from "../../validations/products/productValidation";
+import { productValidations } from "../../validations/products/productValidation.js";
 
 export const checkBodyRequestProducts = async (req, res, next) => {
     try {
@@ -14,12 +13,7 @@ export const checkBodyRequestProducts = async (req, res, next) => {
             })
         }
 
-        const checkProduct = await products.findOne({ product_name: body.product_name });
-        if(checkProduct) {
-            return res.status(421).json({
-                message: "Product is already"
-            })
-        }
+        
 
         next();
     } catch (error) {

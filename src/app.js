@@ -6,15 +6,24 @@ import router from './routes/index.js';
 
 dotenv.config();
 
-const { PORT, DB_URL, DB_URL_ATLAS } = process.env;
+const { PORT, DB_URL } = process.env;
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(DB_URL_ATLAS)
-    .then(() => console.log("Database connected!"))
-    .catch(() => console.log("Database connect failed!"));
+// mongoose.connect(DB_URL)
+//     .then(() => console.log("Database connected!"))
+//     .catch(() => console.log("Database connect failed!"));
+
+(async () => {
+    try {
+        await mongoose.connect(DB_URL);
+        console.log("Database connected!");
+    } catch (error) {
+        console.log(error);
+    }
+})()
 
 app.use("/api", router);
 

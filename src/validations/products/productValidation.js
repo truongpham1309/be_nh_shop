@@ -4,7 +4,10 @@ export const productValidations = Joi.object({
     product_name: Joi.string().required().min(3),
     price: Joi.number().required().min(0),
     category: Joi.string().required().min(3),
-    tags: Joi.array().string().required().min(1),
-    image: Joi.array().required().min(5),
+    countStocks: Joi.number().required().min(0),
+    gallery: Joi.array().required().min(1),
+    tags: Joi.array().required().min(1),
+    image: Joi.string().required().min(5),
+    feature: Joi.boolean().default(false),
     description: Joi.string(),
 })
