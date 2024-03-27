@@ -149,13 +149,16 @@ export const deleteProductByID = async (req, res) => {
 //  [GET] /api/products/category/:idcate
 export const getAllProductsByCategory = async (req, res) => {
     try {
+        const { page } = req.query || 1;
+        const { limit } = req.query || 12;
+        const skipProduct = (page - 1) * limit;
         const data = await categories.findById(req.params.idcate).populate({
             path: "products",
             populate: {
                 path: "category",
                 select: ["category_name", "image", '-_id'],
             }
-        })
+        }).skip(skipProduct).limit(limit);
 
         if (!data) {
             return res.status(404).json({

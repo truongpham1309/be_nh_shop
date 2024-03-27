@@ -6,7 +6,7 @@ import router from './routes/index.js';
 
 dotenv.config();
 
-const { PORT, DB_URL } = process.env;
+const { PORT, DB_URL, DB_URL_ATLAS } = process.env;
 const app = express();
 
 app.use(cors());
