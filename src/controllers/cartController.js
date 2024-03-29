@@ -1,11 +1,19 @@
 import cart from "../models/cart/cart.js";
+import { verifyToken } from "../utils/vertifyToken.js";
 
 export const addToCart = async (req, res) => {
-    const { userID, productID, quantity } = req.body;
+    const { productID, quantity } = req.body;
+    const token = req.headers.authorization.split(' ')[1];
+    if (!token) {
+        return res.status(404).json({
+            message: "Bạn chưa đăng nhập!",
+        })
+    }
     try {
-        let checkCart = await cart.findOne({ userID: userID });
+        const user = await verifyToken(token);
+        let checkCart = await cart.findOne({ userID: user._id });
         if (!checkCart) {
-            checkCart = new cart({ userID, items: [] });
+            checkCart = new cart({ userID: user._id, items: [] });
         }
         const existProductIndex = checkCart.items.findIndex(item => item.productID.toString() === productID);
         if (existProductIndex !== -1) {
@@ -32,9 +40,15 @@ export const addToCart = async (req, res) => {
 
 export const getCartByUserID = async (req, res) => {
     try {
-        const { userID } = req.params;
-
-        const data = await cart.findOne({ userID: userID }).populate({
+        // const { userID } = req.params;
+        const token = req.headers?.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(404).json({
+                message: "Bạn chưa đăng nhập!",
+            })
+        }
+        const user = await verifyToken(token);
+        const data = await cart.findOne({ userID: user._id }).populate({
             path: "userID",
             select: ['-password', '-role']
         }).populate({
@@ -84,8 +98,16 @@ export const getAllCart = async (req, res) => {
 
 export const removeCartByUserID = async (req, res) => {
     try {
-        const { userID, productID } = req.body;
-        let cartOfUser = await cart.findOne({ userID });
+        const { productID } = req.body;
+        const token = req.headers.authorization.split(' ')[1];
+        if (!token) {
+            return res.status(404).json({
+                message: "Bạn chưa đăng nhập!",
+            })
+        }
+
+        const user = await verifyToken(token);
+        let cartOfUser = await cart.findOne({ userID: user._id });
         if (!cartOfUser) {
             return res.status(404).json({
                 message: "Cart not found",
@@ -94,7 +116,7 @@ export const removeCartByUserID = async (req, res) => {
         cartOfUser.items = cartOfUser.items.
             filter(item => item.productID &&
                 item.productID.toString() !== productID);
-        cartOfUser.save();
+        await cartOfUser.save();
         return res.status(200).json({
             cartOfUser
         })
@@ -108,19 +130,22 @@ export const removeCartByUserID = async (req, res) => {
 
 export const updateCartByUserID = async (req, res) => {
     try {
-        const { userID, productID, quantity } = req.body;
+        const { productID, quantity } = req.body;
+        const token = req.headers.authorization.split(' ')[1];
+        if (!token) {
+            return res.status(404).json({
+                message: "Bạn chưa đăng nhập!",
+            })
+        }
+        const user = await verifyToken(token);
 
-        const data = await cart.findOne({ userID });
+        const data = await cart.findOne({ userID: user._id });
         if (!data) {
             return res.status(404).json({
                 message: "Cart not found",
             })
         }
-
-        console.log(data);
-
         const product = data.items.find(item => item.productID.toString() === productID);
-        console.log(product);
         if (!product) {
             res.status(404).json({
                 message: "Product not found",
@@ -128,7 +153,7 @@ export const updateCartByUserID = async (req, res) => {
         }
 
         product.quantity = quantity;
-        product.save();
+        await product.save();
         return res.status(200).json({ data });
 
 

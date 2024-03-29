@@ -4,8 +4,8 @@ import products from "../models/products/products.js";
 //  [GET] /api/products
 export const getAllProducts = async (req, res) => {
     try {
-        const { page } = req.query || 1;
-        const { limit } = req.query || 12;
+        const page = parseInt(req.query.page);
+        const limit = parseInt(req.query.limit);
         const skipProduct = (page - 1) * limit;
         const data = await products.find().skip(skipProduct).limit(limit).populate({
             path: "category",
@@ -26,7 +26,7 @@ export const getDetailProduct = async (req, res) => {
     try {
         const data = await products.findById(req.params.id).populate({
             path: 'category',
-            select: ["category_name", "image", "-_id"]
+            select: ["category_name", "image"]
         });
 
         if (!data) {
@@ -44,7 +44,7 @@ export const getDetailProduct = async (req, res) => {
 //  [POST] /api/products
 export const createProduct = async (req, res) => {
     try {
-        const checkProduct = await products.findOne({ product_name: body.product_name });
+        const checkProduct = await products.findOne({ product_name: req.body.product_name });
         if (checkProduct) {
             return res.status(421).json({
                 message: "Product is already"
@@ -80,7 +80,10 @@ export const createProduct = async (req, res) => {
             product,
         })
     } catch (error) {
-        return res.status(500).json({ ...error });
+        return res.status(500).json({
+            message: error.message || "Server error",
+            name: error.name || "Unknown error",
+        });
     }
 }
 
@@ -150,15 +153,19 @@ export const deleteProductByID = async (req, res) => {
 export const getAllProductsByCategory = async (req, res) => {
     try {
         const { page } = req.query || 1;
-        const { limit } = req.query || 12;
+        const { limit } = req.query || 4;
         const skipProduct = (page - 1) * limit;
         const data = await categories.findById(req.params.idcate).populate({
             path: "products",
             populate: {
                 path: "category",
                 select: ["category_name", "image", '-_id'],
-            }
-        }).skip(skipProduct).limit(limit);
+            },
+            options: {
+                skip: skipProduct,
+                limit: limit
+            },
+        });
 
         if (!data) {
             return res.status(404).json({

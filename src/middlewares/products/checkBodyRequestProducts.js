@@ -13,8 +13,6 @@ export const checkBodyRequestProducts = async (req, res, next) => {
             })
         }
 
-        
-
         next();
     } catch (error) {
         return res.status(500).json({
