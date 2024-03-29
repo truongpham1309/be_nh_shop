@@ -165,4 +165,75 @@ export const updateCartByUserID = async (req, res) => {
     }
 }
 
+export const incrementQuantity = async (req, res) => {
+    try {
+        const { productID } = req.body;
+        const token = req.headers.authorization.split(' ')[1];
+        if (!token) {
+            return res.status(404).json({
+                message: "Bạn chưa đăng nhập!",
+            })
+        }
+        const user = await verifyToken(token);
+
+        const data = await cart.findOne({ userID: user._id });
+        if (!data) {
+            return res.status(404).json({
+                message: "Cart not found",
+            })
+        }
+        const product = data.items.find(item => item.productID.toString() === productID);
+        if (!product) {
+            res.status(404).json({
+                message: "Product not found",
+            })
+        }
+
+        product.quantity += 1;
+        await product.save();
+        return res.status(200).json({ data });
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || "Server error",
+            name: error.name || "Unknown error",
+        })
+    }
+}
+
+export const decrementQuantity = async (req, res) => {
+    try {
+        const { productID } = req.body;
+        const token = req.headers.authorization.split(' ')[1];
+        if (!token) {
+            return res.status(404).json({
+                message: "Bạn chưa đăng nhập!",
+            })
+        }
+        const user = await verifyToken(token);
+
+        const data = await cart.findOne({ userID: user._id });
+        if (!data) {
+            return res.status(404).json({
+                message: "Cart not found",
+            })
+        }
+        const product = data.items.find(item => item.productID.toString() === productID);
+        if (!product) {
+            res.status(404).json({
+                message: "Product not found",
+            })
+        }
+
+        product.quantity -= 1;
+        await product.save();
+        return res.status(200).json({ data });
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || "Server error",
+            name: error.name || "Unknown error",
+        })
+    }
+}
+
+
 
