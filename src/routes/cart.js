@@ -6,7 +6,7 @@ const cartRouter = Router();
 
 cartRouter.post("/add-to-cart", addToCart);
 cartRouter.get("/user", getCartByUserID);
-cartRouter.delete("/delete-to-cart", removeCartByUserID);
+cartRouter.put("/delete-to-cart", removeCartByUserID);
 cartRouter.put("/update-cart", updateCartByUserID);
 cartRouter.put("/increment", incrementQuantity);
 cartRouter.put("/decrement", decrementQuantity);

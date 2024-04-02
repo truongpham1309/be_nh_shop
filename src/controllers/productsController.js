@@ -4,15 +4,16 @@ import products from "../models/products/products.js";
 //  [GET] /api/products
 export const getAllProducts = async (req, res) => {
     try {
-        const page = parseInt(req.query.page);
-        const limit = parseInt(req.query.limit);
-        const skipProduct = (page - 1) * limit;
-        const data = await products.find().skip(skipProduct).limit(limit).populate({
-            path: "category",
-            select: ['category_name', 'image']
-        });
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 12;
+        const options = {
+            page: page,
+            limit: limit,
+            populate: [{ path: "category", select: "category_name" }]
+        }
 
-        return res.status(200).json(data);
+        const data = await products.paginate({}, options);
+        return res.status(200).json({ products: data.docs, totalPage: data.totalPages });
     } catch (error) {
         return res.status(500).json({
             message: error.message || "Server error",

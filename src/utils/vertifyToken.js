@@ -9,6 +9,11 @@ const { SECRET_CODE } = process.env
 export const verifyToken = async (token) => {
     try {
         const decoded = jwt.verify(token, SECRET_CODE);
+        if(!decoded){
+            return res.status(404).json({
+                message: "Tài khoản của bạn đã hết hạn, vui lòng đăng nhập lại!",
+            })
+        }
         const user = await authModel.findById(decoded.id);
         if (!user) {
             return res.status(404).json({

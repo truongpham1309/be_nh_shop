@@ -99,7 +99,7 @@ export const getAllCart = async (req, res) => {
 export const removeCartByUserID = async (req, res) => {
     try {
         const { productID } = req.body;
-        const token = req.headers.authorization.split(' ')[1];
+        const token = req.headers?.authorization?.split(' ')[1];
         if (!token) {
             return res.status(404).json({
                 message: "Bạn chưa đăng nhập!",
@@ -189,8 +189,8 @@ export const incrementQuantity = async (req, res) => {
             })
         }
 
-        product.quantity += 1;
-        await product.save();
+        product.quantity = product.quantity + 1;
+        await data.save();
         return res.status(200).json({ data });
     } catch (error) {
         return res.status(500).json({
@@ -224,8 +224,11 @@ export const decrementQuantity = async (req, res) => {
             })
         }
 
-        product.quantity -= 1;
-        await product.save();
+        if (product.quantity > 1) product.quantity -= 1;
+        else data.items = data.items.
+            filter(item => item.productID &&
+                item.productID.toString() !== productID);
+        await data.save();
         return res.status(200).json({ data });
     } catch (error) {
         return res.status(500).json({
