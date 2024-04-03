@@ -3,7 +3,7 @@ import { verifyToken } from "../utils/vertifyToken.js";
 
 export const addToCart = async (req, res) => {
     const { productID, quantity } = req.body;
-    const token = req.headers.authorization.split(' ')[1];
+    const token = req.headers?.authorization?.split(' ')[1];
     if (!token) {
         return res.status(404).json({
             message: "Bạn chưa đăng nhập!",
@@ -11,7 +11,7 @@ export const addToCart = async (req, res) => {
     }
     try {
         const user = await verifyToken(token);
-        let checkCart = await cart.findOne({ userID: user._id });
+        let checkCart = await cart.findOne({ userID: user._id, status: false });
         if (!checkCart) {
             checkCart = new cart({ userID: user._id, items: [] });
         }
@@ -48,7 +48,7 @@ export const getCartByUserID = async (req, res) => {
             })
         }
         const user = await verifyToken(token);
-        const data = await cart.findOne({ userID: user._id }).populate({
+        const data = await cart.findOne({ userID: user._id, status: false }).populate({
             path: "userID",
             select: ['-password', '-role']
         }).populate({
@@ -131,7 +131,7 @@ export const removeCartByUserID = async (req, res) => {
 export const updateCartByUserID = async (req, res) => {
     try {
         const { productID, quantity } = req.body;
-        const token = req.headers.authorization.split(' ')[1];
+        const token = req.headers?.authorization?.split(' ')[1];
         if (!token) {
             return res.status(404).json({
                 message: "Bạn chưa đăng nhập!",
@@ -168,7 +168,7 @@ export const updateCartByUserID = async (req, res) => {
 export const incrementQuantity = async (req, res) => {
     try {
         const { productID } = req.body;
-        const token = req.headers.authorization.split(' ')[1];
+        const token = req.headers?.authorization?.split(' ')[1];
         if (!token) {
             return res.status(404).json({
                 message: "Bạn chưa đăng nhập!",
@@ -176,7 +176,7 @@ export const incrementQuantity = async (req, res) => {
         }
         const user = await verifyToken(token);
 
-        const data = await cart.findOne({ userID: user._id });
+        const data = await cart.findOne({ userID: user._id, status: false });
         if (!data) {
             return res.status(404).json({
                 message: "Cart not found",
@@ -184,7 +184,7 @@ export const incrementQuantity = async (req, res) => {
         }
         const product = data.items.find(item => item.productID.toString() === productID);
         if (!product) {
-            res.status(404).json({
+            return res.status(404).json({
                 message: "Product not found",
             })
         }
@@ -203,7 +203,7 @@ export const incrementQuantity = async (req, res) => {
 export const decrementQuantity = async (req, res) => {
     try {
         const { productID } = req.body;
-        const token = req.headers.authorization.split(' ')[1];
+        const token = req.headers?.authorization?.split(' ')[1];
         if (!token) {
             return res.status(404).json({
                 message: "Bạn chưa đăng nhập!",
@@ -211,7 +211,7 @@ export const decrementQuantity = async (req, res) => {
         }
         const user = await verifyToken(token);
 
-        const data = await cart.findOne({ userID: user._id });
+        const data = await cart.findOne({ userID: user._id, status: false });
         if (!data) {
             return res.status(404).json({
                 message: "Cart not found",
@@ -219,7 +219,7 @@ export const decrementQuantity = async (req, res) => {
         }
         const product = data.items.find(item => item.productID.toString() === productID);
         if (!product) {
-            res.status(404).json({
+            return res.status(404).json({
                 message: "Product not found",
             })
         }

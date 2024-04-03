@@ -18,7 +18,11 @@ const cartSchema = new mongoose.Schema({
     },
     items: [
         cartItemSchema
-    ]
+    ],
+    status: {
+        type: Boolean,
+        default: false
+    }
 }, {
     versionKey: false,
     timestamps: true,
