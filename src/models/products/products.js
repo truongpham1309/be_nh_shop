@@ -23,6 +23,7 @@ const productSchema = new mongoose.Schema({
     gallery: [
         {
             type: String,
+            default: "https://res.cloudinary.com/dhfryzrce/image/upload/v1710856000/react_image/vbxldpakol3z1wz2z7dg.png"
         }
     ],
     countStocks: {
@@ -39,6 +40,10 @@ const productSchema = new mongoose.Schema({
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'categories',
+    },
+    isDelete: {
+        type: Boolean,
+        default: false,
     }
 }, {
     versionKey: false,

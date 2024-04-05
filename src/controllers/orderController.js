@@ -52,8 +52,14 @@ export const createOrderByUser = async (req, res) => {
 
 export const getAllOrderByUserID = async (req, res) => {
     try {
-        const token = req.headers?.authorization?.split(' ')[1];
+        const token = req?.headers?.authorization?.split(' ')[1];
         const user = await verifyToken(token);
+
+        if(!user) {
+            return res.status(403).json({
+                message: "Bạn chưa đăng nhập!",
+            })
+        }
 
         const data = await order.find({ userID: user._id }).sort({ createdAt: -1 }).populate({
             path: "userID",

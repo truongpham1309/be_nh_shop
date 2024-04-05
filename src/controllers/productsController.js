@@ -12,7 +12,7 @@ export const getAllProducts = async (req, res) => {
             populate: [{ path: "category", select: "category_name" }]
         }
 
-        const data = await products.paginate({}, options);
+        const data = await products.paginate({ isDelete: false }, options);
         return res.status(200).json({ products: data.docs, totalPage: data.totalPages });
     } catch (error) {
         return res.status(500).json({
@@ -27,7 +27,7 @@ export const getDetailProduct = async (req, res) => {
     try {
         const data = await products.findById(req.params.id).populate({
             path: 'category',
-            select: ["category_name", "image"]
+            select: ["category_name"]
         });
 
         if (!data) {
@@ -35,8 +35,23 @@ export const getDetailProduct = async (req, res) => {
                 message: "Products not found"
             })
         }
+        return res.json(data);
+    } catch (error) {
+        return res.status(500).json({ ...error });
+    }
+}
 
-        return res.json(data)
+export const getDetailProductAdmin = async (req, res) => {
+    try {
+        const data = await products.findById(req.params.id);
+
+        if (!data) {
+            return res.status(404).json({
+                message: "Products not found"
+            })
+        }
+
+        return res.json(data);
     } catch (error) {
         return res.status(500).json({ ...error });
     }
@@ -124,10 +139,14 @@ export const updateProductByID = async (req, res) => {
     }
 }
 
-//  [DELETE] /api/products/:id
+//  [PUT] /api/products/:id
 export const deleteProductByID = async (req, res) => {
     try {
-        const data = await products.findByIdAndDelete(req.params.id);
+        const data = await products.findOneAndUpdate(
+            { _id: req.params.id },
+            { $set: { isDelete: true } },
+            { new: true }
+        );
 
         if (!data) {
             return res.status(404).json({
@@ -135,11 +154,11 @@ export const deleteProductByID = async (req, res) => {
             })
         }
 
-        await categories.updateOne(
-            { _id: data.category._id },
-            { $pull: { products: data._id } },
-            { new: true }
-        )
+        // await categories.updateOne(
+        //     { _id: data.category._id },
+        //     { $pull: { products: data._id } },
+        //     { new: true }
+        // )
 
         return res.json(data)
     } catch (error) {
@@ -158,6 +177,7 @@ export const getAllProductsByCategory = async (req, res) => {
         const skipProduct = (page - 1) * limit;
         const data = await categories.findById(req.params.idcate).populate({
             path: "products",
+            match: { isDelete: false },
             populate: {
                 path: "category",
                 select: ["category_name", "image", '-_id'],

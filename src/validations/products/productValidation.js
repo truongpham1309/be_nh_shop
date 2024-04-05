@@ -1,6 +1,7 @@
 import Joi from "joi";
 
 export const productValidations = Joi.object({
+    _id: Joi.string(),
     product_name: Joi.string().required().min(3),
     price: Joi.number().required().min(0),
     category: Joi.string().required().min(3),
