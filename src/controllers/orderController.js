@@ -95,7 +95,6 @@ export const updateStatusOrderByID = async (req, res) => {
         };
 
         const data = await order.findOne({
-            userID: user._id,
             _id: req.params.id
         });
 
