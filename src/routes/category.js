@@ -7,7 +7,7 @@ const cateRoter = Router();
 cateRoter.get("/", getAllCategory);
 cateRoter.post("/", createCategory);
 cateRoter.put("/:id", updateCategory);
-cateRoter.get("/:id", getDetailCategory);
+cateRoter.get("/:idcate", getDetailCategory);
 cateRoter.delete("/:id", deleteCategory);
 
 export default cateRoter
