@@ -11,4 +11,4 @@ export const productValidations = Joi.object({
     image: Joi.string().required().min(5),
     feature: Joi.boolean().default(false),
     description: Joi.string(),
-})
+});

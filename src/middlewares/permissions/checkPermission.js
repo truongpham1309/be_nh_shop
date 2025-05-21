@@ -12,7 +12,7 @@ export const checkPermissionAdmin = async (req, res, next) => {
 
         const checkAdmin = await verifyToken(token);
 
-        if(checkAdmin.role === "member"){
+        if(checkAdmin?.role !== "admin"){
             return res.status(400).json({
                 message: "Bạn không có quyền làm việc này!",
             })

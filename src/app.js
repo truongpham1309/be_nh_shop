@@ -6,7 +6,7 @@ import router from './routes/index.js';
 
 dotenv.config();
 
-const { PORT, DB_URL, DB_URL_ATLAS } = process.env;
+const { PORT, DB_URL_ATLAS } = process.env;
 const app = express();
 
 app.use(cors());
@@ -18,7 +18,7 @@ app.use(express.json());
 
 (async () => {
     try {
-        await mongoose.connect(DB_URL);
+        await mongoose.connect(DB_URL_ATLAS);
         console.log("Database connected!");
     } catch (error) {
         console.log(error);
