@@ -13,21 +13,21 @@ export const index = async (req, res) => {
             .sort({ [sort]: order })
             .limit(limit);
 
-        // Update movie status
-        for (let movie of movies) {
+        // Cập nhật trạng thái song song
+        await Promise.all(movies.map(async (movie) => {
             const releaseDate = movie.release_date?.toISOString().split('T')[0];
             const endDate = movie.end_date?.toISOString().split('T')[0];
 
             if (currentDate > endDate) {
                 movie.status = 'Stopped Showing';
                 movie.is_early_showtime = false;
-                await movie.save();
+                return movie.save();
             } else if (currentDate >= releaseDate && currentDate <= endDate) {
                 movie.status = 'Currently Showing';
                 movie.is_early_showtime = false;
-                await movie.save();
+                return movie.save();
             }
-        }
+        }));
 
         const total = await Movie.countDocuments({ deleted: false });
         return res.status(200).json({
@@ -46,6 +46,7 @@ export const index = async (req, res) => {
         return res.status(502).json({ success: false, message: error.message });
     }
 };
+
 
 // GET /api/dashboard/movie/:id
 export const show = async (req, res) => {
