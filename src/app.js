@@ -12,10 +12,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// mongoose.connect(DB_URL)
-//     .then(() => console.log("Database connected!"))
-//     .catch(() => console.log("Database connect failed!"));
-
 (async () => {
     try {
         await mongoose.connect(DB_URL_ATLAS);
