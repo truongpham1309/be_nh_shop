@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import Movie from '../models/Movie.js';
+import { StatusCodes, ReasonPhrases } from 'http-status-codes';
 
 // GET /api/dashboard/movie
 export const index = async (req, res) => {
@@ -31,7 +32,7 @@ export const index = async (req, res) => {
 
         const total = await Movie.countDocuments({ deleted: false });
         return res.status(200).json({
-            success: true,
+            success: StatusCodes.OK,
             data: {
                 movies,
                 meta: {
@@ -43,7 +44,10 @@ export const index = async (req, res) => {
             }
         });
     } catch (error) {
-        return res.status(502).json({ success: false, message: error.message });
+        return res.status(StatusCodes?.INTERNAL_SERVER_ERROR).json({
+            success: StatusCodes?.INTERNAL_SERVER_ERROR,
+            message: ReasonPhrases.INTERNAL_SERVER_ERROR
+        });
     }
 };
 
@@ -52,10 +56,13 @@ export const index = async (req, res) => {
 export const show = async (req, res) => {
     try {
         const movie = await Movie.findOne({ _id: req.params.id, deleted: false });
-        if (!movie) return res.status(400).json({ success: false, message: 'Không tìm thấy phim' });
-        return res.status(200).json({ success: true, data: { movie } });
+        if (!movie) return res.status(400).json({ success: StatusCodes.NOTFOUND, message: 'Không tìm thấy phim' });
+        return res.status(200).json({ success: StatusCodes.OK, data: { movie } });
     } catch (error) {
-        return res.status(502).json({ success: false, message: error.message });
+        return res.status(StatusCodes?.INTERNAL_SERVER_ERROR).json({
+            success: StatusCodes?.INTERNAL_SERVER_ERROR,
+            message: ReasonPhrases.INTERNAL_SERVER_ERROR
+        });
     }
 };
 

@@ -17,16 +17,15 @@ export async function sendVerificationEmail(user, verificationUrl) {
             to: user.email,
             subject: 'Xác thực tài khoản của bạn',
             html: `
-        <p>Xin chào <b>${user.full_name}</b>,</p>
-        <p>Cảm ơn bạn đã đăng ký. Vui lòng click vào liên kết bên dưới để xác thực tài khoản:</p>
-        <a href="${verificationUrl}">Xác thực tài khoản</a>
-        <p>Nếu bạn không đăng ký, vui lòng bỏ qua email này.</p>
-      `,
+                <p>Xin chào <b>${user.full_name}</b>,</p>
+                <p>Cảm ơn bạn đã đăng ký. Vui lòng click vào liên kết bên dưới để xác thực tài khoản:</p>
+                <a href="${verificationUrl}">Xác thực tài khoản</a>
+                <p>Nếu bạn không đăng ký, vui lòng bỏ qua email này.</p>
+            `,
         };
 
         // Gửi email
-        const info = await transporter.sendMail(mailOptions);
-        console.log('Email sent: %s', info);
+        await transporter.sendMail(mailOptions);
         return true;
     } catch (error) {
         console.error('Error sending verification email:', error);

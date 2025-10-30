@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from "dotenv";
 import mongoose from 'mongoose';
 import router from './routes/index.js';
+import chalk from 'chalk';
 
 dotenv.config();
 
@@ -24,6 +25,5 @@ app.use(express.json());
 app.use("/api", router);
 
 app.listen(PORT, () => {
-    console.log("Server listening on port " + PORT);
-})
-
+    console.log(chalk.green("Server listening on port " + PORT));
+});
